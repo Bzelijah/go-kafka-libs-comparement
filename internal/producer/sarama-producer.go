@@ -32,13 +32,13 @@ func (p *SaramaProducer) AddMessage(message string) error {
 		Value:     sarama.StringEncoder(message),
 	}
 
-	partition, offset, err := p.producer.SendMessage(producerMessage)
+	_, _, err := p.producer.SendMessage(producerMessage)
 	if err != nil {
-		fmt.Printf("Failed to send message: %v\n", err)
+		fmt.Printf("SaramaProducer: Failed to send message: %v\n", err)
 		return err
 	}
 
-	fmt.Printf("Message sent to partition %d with offset %d\n", partition, offset)
+	fmt.Printf("SaramaProducer: Message sent to partition %d\n", p.partition)
 
 	return nil
 }

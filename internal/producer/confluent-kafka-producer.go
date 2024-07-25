@@ -22,9 +22,9 @@ func NewConfluentKafkaProducer(partition int32, topic string) (*ConfluentKafkaPr
 			switch ev := e.(type) {
 			case *kafka.Message:
 				if ev.TopicPartition.Error != nil {
-					fmt.Printf("Delivery failed: %v\n", ev.TopicPartition)
+					fmt.Printf("ConfluentKafkaProducer: Delivery failed: %v\n", ev.TopicPartition)
 				} else {
-					fmt.Printf("Delivered message to %v\n", ev.TopicPartition)
+					fmt.Printf("ConfluentKafkaProducer: Delivered message to %v\n", ev.TopicPartition)
 				}
 			}
 		}
@@ -44,6 +44,8 @@ func (p *ConfluentKafkaProducer) AddMessage(message string) error {
 	}, nil); err != nil {
 		return err
 	}
+
+	fmt.Printf("ConfluentKafkaProducer: Message sent to partition %d\n", p.partition)
 
 	return nil
 }

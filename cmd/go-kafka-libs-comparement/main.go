@@ -11,15 +11,15 @@ import (
 func main() {
 	topic := "quickstart-topic"
 
-	go consumer.RunSaramaConsumer(0, topic)
-	go consumer.RunConfluentKafkaConsumer(1, topic)
+	go consumer.RunSaramaConsumer(1, topic)
+	go consumer.RunConfluentKafkaConsumer(0, topic)
 
-	confluentKafkaProducer, err := producer.NewConfluentKafkaProducer(0, topic)
+	confluentKafkaProducer, err := producer.NewConfluentKafkaProducer(1, topic)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	saramaProducer, err := producer.RunSaramaProducer(1, topic)
+	saramaProducer, err := producer.RunSaramaProducer(0, topic)
 	if err != nil {
 		log.Fatal(err)
 	}
