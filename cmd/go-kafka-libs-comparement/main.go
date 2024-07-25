@@ -5,26 +5,28 @@ import (
 	"github.com/Bzelijah/go-kafka-libs-comparement/internal/consumer"
 	"github.com/Bzelijah/go-kafka-libs-comparement/internal/producer"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"log"
 )
 
 func main() {
-	go consumer.RunSaramaConsumer(0)
-	//go producer.RunSaramaProducer(0)
-	//go consumer.RunConfluentKafkaConsumer()
-	confluentKafkaProducer, err := producer.NewConfluentKafkaProducer(0)
+	topic := "quickstart-topic"
+
+	go consumer.RunSaramaConsumer(0, topic)
+	go consumer.RunConfluentKafkaConsumer(1, topic)
+
+	confluentKafkaProducer, err := producer.NewConfluentKafkaProducer(0, topic)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	appHandler := app.NewHandler(confluentKafkaProducer)
+	saramaProducer, err := producer.RunSaramaProducer(1, topic)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	appHandler := app.NewHandler(confluentKafkaProducer, saramaProducer)
 
 	e := echo.New()
-
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-
 	e.POST("/add-message", appHandler.HandleAddMessage)
 
 	if err := e.Start(":8080"); err != nil {

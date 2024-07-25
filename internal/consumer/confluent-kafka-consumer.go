@@ -7,19 +7,16 @@ import (
 	"log"
 )
 
-func RunConfluentKafkaConsumer(partition int32) {
+func RunConfluentKafkaConsumer(partition int32, topic string) {
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": "localhost:9092",
 		"group.id":          "group1",
 		"auto.offset.reset": "earliest",
-		//"debug":             "all",
 	})
 	if err != nil {
 		log.Fatal("Failed to start Confluent Kafka consumer:", errors.Wrap(err, "NewConfluentKafkaConsumer"))
 	}
-	defer consumer.Close()
 
-	topic := "quickstart-topic"
 	tp := kafka.TopicPartition{Topic: &topic, Partition: partition}
 
 	err = consumer.Assign([]kafka.TopicPartition{tp})

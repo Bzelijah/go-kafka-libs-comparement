@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-func RunSaramaConsumer(partition int32) {
+func RunSaramaConsumer(partition int32, topic string) {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = true
 
@@ -15,7 +15,6 @@ func RunSaramaConsumer(partition int32) {
 	if err != nil {
 		log.Fatal("Failed to start Sarama consumer:", errors.Wrap(err, "NewSaramaConsumer"))
 	}
-	defer consumer.Close()
 
 	partitionConsumer, err := consumer.ConsumePartition("quickstart-topic", partition, sarama.OffsetOldest)
 	if err != nil {

@@ -8,9 +8,10 @@ import (
 type ConfluentKafkaProducer struct {
 	producer  *kafka.Producer
 	partition int32
+	topic     string
 }
 
-func NewConfluentKafkaProducer(partition int32) (*ConfluentKafkaProducer, error) {
+func NewConfluentKafkaProducer(partition int32, topic string) (*ConfluentKafkaProducer, error) {
 	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": "localhost:9092"})
 	if err != nil {
 		return nil, err
@@ -30,15 +31,15 @@ func NewConfluentKafkaProducer(partition int32) (*ConfluentKafkaProducer, error)
 	}()
 
 	return &ConfluentKafkaProducer{
-		producer: p,
+		producer:  p,
+		partition: partition,
+		topic:     topic,
 	}, nil
 }
 
-var topic = "quickstart-topic"
-
 func (p *ConfluentKafkaProducer) AddMessage(message string) error {
 	if err := p.producer.Produce(&kafka.Message{
-		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: p.partition},
+		TopicPartition: kafka.TopicPartition{Topic: &p.topic, Partition: p.partition},
 		Value:          []byte(message),
 	}, nil); err != nil {
 		return err

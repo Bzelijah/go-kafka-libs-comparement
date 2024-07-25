@@ -3,7 +3,6 @@ package app
 import (
 	"encoding/json"
 	"github.com/Bzelijah/go-kafka-libs-comparement/internal/producer"
-	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	"io"
@@ -12,21 +11,19 @@ import (
 
 type Handler struct {
 	confluentKafkaProducer *producer.ConfluentKafkaProducer
-	saramaProducer         *kafka.Producer
+	saramaProducer         *producer.SaramaProducer
 }
 
-func NewHandler(confluentKafkaProducer *producer.ConfluentKafkaProducer,
-
-// saramaProducer *kafka.Producer,
-) *Handler {
+func NewHandler(confluentKafkaProducer *producer.ConfluentKafkaProducer, saramaProducer *producer.SaramaProducer) *Handler {
 	return &Handler{
 		confluentKafkaProducer: confluentKafkaProducer,
-		//saramaProducer:         saramaProducer,
+		saramaProducer:         saramaProducer,
 	}
 }
 
 type AddMessageRequest struct {
 	Message string `json:"message"`
+	LibName string `json:"libName"`
 }
 
 func (h *Handler) HandleAddMessage(c echo.Context) error {
@@ -43,9 +40,21 @@ func (h *Handler) HandleAddMessage(c echo.Context) error {
 		log.Err(err).Msg("could not unmarshal request body")
 	}
 
-	if err := h.confluentKafkaProducer.AddMessage(body.Message); err != nil {
-		log.Err(err).Msg("could not add message")
+	if body.LibName == "confluent-kafka" {
+		if err = h.confluentKafkaProducer.AddMessage(body.Message); err != nil {
+			log.Err(err).Msg("could not add message")
+			return c.String(http.StatusInternalServerError, "confluent-kafka: could not add message")
+		}
+
+		return c.String(http.StatusOK, "confluent-kafka: added message")
+	} else if body.LibName == "sarama" {
+		if err = h.saramaProducer.AddMessage(body.Message); err != nil {
+			log.Err(err).Msg("could not add message")
+			return c.String(http.StatusInternalServerError, "sarama: could not add message")
+		}
+
+		return c.String(http.StatusOK, "sarama: added message")
 	}
 
-	return nil
+	return c.String(http.StatusNotFound, "unknown request")
 }
