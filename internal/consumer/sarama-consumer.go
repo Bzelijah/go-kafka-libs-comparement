@@ -40,9 +40,6 @@ func RunSaramaConsumer(partition int32, topic string) {
 	defer partitionOffsetManager.Close()
 
 	nextOffset, _ := partitionOffsetManager.NextOffset()
-	if nextOffset == sarama.OffsetNewest {
-		nextOffset = sarama.OffsetNewest
-	}
 
 	partitionConsumer, err := consumer.ConsumePartition(topic, partition, nextOffset)
 	if err != nil {
