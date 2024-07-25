@@ -40,13 +40,13 @@ func (h *Handler) HandleAddMessage(c echo.Context) error {
 		log.Err(err).Msg("could not unmarshal request body")
 	}
 
-	if body.LibName == "confluent-kafka" {
+	if body.LibName == "confluent-kafka-go" {
 		if err = h.confluentKafkaProducer.AddMessage(body.Message); err != nil {
 			log.Err(err).Msg("could not add message")
-			return c.String(http.StatusInternalServerError, "confluent-kafka: could not add message")
+			return c.String(http.StatusInternalServerError, "confluent-kafka-go: could not add message")
 		}
 
-		return c.String(http.StatusOK, "confluent-kafka: added message")
+		return c.String(http.StatusOK, "confluent-kafka-go: added message")
 	} else if body.LibName == "sarama" {
 		if err = h.saramaProducer.AddMessage(body.Message); err != nil {
 			log.Err(err).Msg("could not add message")

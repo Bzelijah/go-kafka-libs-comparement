@@ -52,3 +52,25 @@ bin/kafka-console-consumer.sh --topic quickstart-topic --from-beginning --bootst
 ```
 
 Вы должны увидеть отправленные вами сообщения.
+
+## Пример использования
+
+Записываем с помощью sarama, читаем с помощью confluent-kafka-go
+
+```bash
+curl -X POST http://localhost:8080/add-message \
+     -H "Content-Type: application/json" \
+     -d '{
+           "message": "1", "lib-name": "sarama"         
+         }'
+```
+
+И наоборот
+
+```bash
+curl -X POST http://localhost:8080/add-message \
+     -H "Content-Type: application/json" \
+     -d '{
+           "message": "2", "lib-name": "confluent-kafka-go"         
+         }'
+```
