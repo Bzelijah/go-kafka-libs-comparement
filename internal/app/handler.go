@@ -23,7 +23,7 @@ func NewHandler(confluentKafkaProducer *producer.ConfluentKafkaProducer, saramaP
 
 type AddMessageRequest struct {
 	Message string `json:"message"`
-	LibName string `json:"libName"`
+	LibName string `json:"lib-name"`
 }
 
 func (h *Handler) HandleAddMessage(c echo.Context) error {
